@@ -38,11 +38,13 @@ func configureAPI(api *operations.TestBkAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.TestGetTestHandler == nil {
-		api.TestGetTestHandler = test.GetTestHandlerFunc(func(params test.GetTestParams) middleware.Responder {
-			return middleware.NotImplemented("operation test.GetTest has not yet been implemented")
-		})
-	}
+	api.TestGetTestHandler = test.GetTestHandlerFunc(func(params test.GetTestParams) middleware.Responder {
+		var result int64
+		if params.ID != nil {
+			result = *params.ID % 2
+		}
+		return test.NewGetTestOK().WithPayload(result)
+	})
 
 	api.PreServerShutdown = func() {}
 
